@@ -6,6 +6,12 @@ AI Security Lab is a practitioner-led community by [TechRiot.io](https://techrio
 
 Each session focuses on a real implementation, shown live by the person who built it. The goal is to make practical AI security knowledge easier to inspect, reproduce, and improve.
 
+## Join upcoming sessions
+
+AI Security Lab hosts live practitioner sessions every two weeks.
+
+[View and register for upcoming sessions on Luma](https://lu.ma/aisecuritylab)
+
 ## What belongs here
 
 This repository is the public record for AI Security Lab sessions. It can contain:
@@ -16,6 +22,7 @@ This repository is the public record for AI Security Lab sessions. It can contai
 - threat models
 - implementation notes
 - links to recordings
+- downloadable transcripts and chat logs
 - lessons learned
 - follow-up resources
 
@@ -33,15 +40,31 @@ The repository is not intended to be a collection of vendor pitches, generic fra
 
 | Session | Topic | Speaker | Status |
 |---|---|---|---|
-| [001](sessions/001-task-scoped-authorization-for-ai-agents/) | Task-scoped authorization for AI agents | Security Engineer, Snap | Scheduled |
+| [001](./sessions/001-task-scoped-authorization-for-ai-agents/) | Task-scoped authorization for AI agents | Niki Aimable, Security Engineer at Snap | Published |
+
+## Browse by security pattern
+
+| Pattern | Sessions |
+|---|---|
+| Least privilege | [001](./sessions/001-task-scoped-authorization-for-ai-agents/) |
+| Task-scoped authorization | [001](./sessions/001-task-scoped-authorization-for-ai-agents/) |
+| Default deny | [001](./sessions/001-task-scoped-authorization-for-ai-agents/) |
+| Argument-level controls | [001](./sessions/001-task-scoped-authorization-for-ai-agents/) |
+| Human approval | [001](./sessions/001-task-scoped-authorization-for-ai-agents/) |
+| Audit trail | [001](./sessions/001-task-scoped-authorization-for-ai-agents/) |
+| Sandboxed execution | [001](./sessions/001-task-scoped-authorization-for-ai-agents/) |
+
+This index will grow as new practitioner sessions are published.
 
 ## Repository structure
 
 ```text
 .
 ├── sessions/
-│   └── 001-task-scoped-authorization-for-ai-agents/
+│   └── <number>-<session-title>/
 │       ├── README.md
+│       ├── transcript.vtt
+│       ├── chat.txt
 │       ├── demo/
 │       ├── diagrams/
 │       └── resources.md
@@ -53,9 +76,11 @@ The repository is not intended to be a collection of vendor pitches, generic fra
 └── SECURITY.md
 ```
 
+Not every session will include every optional file or directory. Each session should include a concise `README.md`; transcripts, chat logs, demo code, diagrams, and additional resources are added when available and authorised for publication.
+
 ## Propose a session
 
-Open a **Session Proposal** issue using the repository issue template.
+Open a Session Proposal issue using the repository issue template.
 
 Strong proposals usually include:
 
@@ -65,12 +90,35 @@ Strong proposals usually include:
 - reusable code, patterns, or lessons
 - honest discussion of limitations
 
+## Contributing
+
+You can help by:
+
+- sharing an implementation you have built
+- suggesting a future speaker or topic
+- improving session notes
+- adding useful references
+- opening an issue or pull request
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for details.
+
+## Support AI Security Lab
+
+If this repository is useful:
+
+- star the repository
+- share it with your team or community
+- recommend a practitioner who should present a future session
+- join an upcoming session on [Luma](https://lu.ma/aisecuritylab)
+
+> **Make production AI security knowledge accessible to every security engineer.**
+
 ## Reuse and licensing
 
 Unless a session folder states otherwise:
 
-- original written content and diagrams are intended for release under **CC BY 4.0**
-- original code is intended for release under **Apache License 2.0**
+- original written content and diagrams are intended for release under CC BY 4.0
+- original code is intended for release under Apache License 2.0
 
 Speakers must only contribute material they are authorised to publish. Third-party projects retain their original licences.
 
