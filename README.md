@@ -1,65 +1,85 @@
 # AI Security Lab
 
-**Live demos. Open source. No slideware.**
+> **Live demos. Open source. No slideware.**
 
-AI Security Lab is a practitioner-led community by [TechRiot.io](https://techriot.io) for people building and securing AI systems in production.
+AI Security Lab is a practitioner-led community by **TechRiot.io** where security engineers demonstrate how AI security is built in production.
 
-Each session focuses on a real implementation, shown live by the person who built it. The goal is to make practical AI security knowledge easier to inspect, reproduce, and improve.
+Every session focuses on a real implementation, shown live by the person who built it. The goal is to make practical AI security knowledge easier to inspect, reproduce, and improve.
 
-## 👉 Join Upcoming Sessions (Luma)
+---
 
-AI Security Lab hosts live practitioner sessions every two weeks.
+## 🚀 Join the Next Live Session
 
-[View and register for upcoming sessions on Luma](https://luma.com/ai-security-lab)
+AI Security Lab hosts live practitioner sessions where engineers demonstrate how AI security is built in production.
 
-## What belongs here
+👉 **Register on Luma:**
 
-This repository is the public record for AI Security Lab sessions. It can contain:
+https://luma.com/ai-security-lab
 
-- session summaries
-- architecture diagrams
-- demo code and configuration
-- threat models
-- implementation notes
-- links to recordings
-- downloadable transcripts and chat logs
-- lessons learned
-- follow-up resources
+If you're building or securing AI systems in production, we'd love to have you join.
 
-The repository is not intended to be a collection of vendor pitches, generic frameworks, or slide-only talks.
+---
+
+## 📚 Sessions
+
+| Session | Topic | Speaker | Status |
+|---------|-------|---------|--------|
+| [001](./sessions/001-task-scoped-authorization-for-ai-agents/) | Task-scoped authorization for AI agents | Niki Aimable (Snap) | ✅ Published |
+
+---
+
+## 🛡️ Browse by Security Pattern
+
+Looking for a specific AI security problem? Browse sessions by the security patterns they demonstrate rather than by date.
+
+| Pattern | Sessions |
+|----------|----------|
+| Least Privilege | 001 |
+| Task-scoped Authorization | 001 |
+| Default Deny | 001 |
+| Argument-level Controls | 001 |
+| Human Approval | 001 |
+| Audit Trail | 001 |
+| Sandboxed Execution | 001 |
+
+> This index grows as new practitioner sessions are published.
+
+---
+
+## 📦 What You'll Find in This Repository
+
+Each published session may include:
+
+- Session summary
+- Architecture diagrams
+- Demo code
+- Threat models
+- Security patterns
+- Open-source projects
+- Downloadable transcripts
+- Chat logs
+- Additional resources
+
+The repository documents real AI security implementations—not slide decks or vendor pitches.
+
+---
 
 ## Principles
 
-1. **Show the implementation.** Working systems are more useful than abstract claims.
-2. **Explain the trade-offs.** What failed, what changed, and what remains unresolved matter.
-3. **Make it reproducible.** Share enough context for another practitioner to understand or test the approach.
-4. **Protect sensitive information.** Do not publish credentials, customer data, internal identifiers, or proprietary code.
-5. **Prioritise practitioners.** Security and engineering practitioners come first. Vendor participation is welcome when the session is implementation-led and technically substantive.
+1. **Show the implementation.** Working systems are more valuable than abstract frameworks.
+2. **Explain the trade-offs.** Share what worked, what didn't, and what you'd change.
+3. **Make it reproducible.** Help others understand or recreate the approach.
+4. **Protect sensitive information.** Never publish credentials, customer data, or proprietary code.
+5. **Prioritize practitioners.** Sessions are designed for engineers building and securing AI systems in production.
 
-## Sessions
+---
 
-| Session | Topic | Speaker | Status |
-|---|---|---|---|
-| [001](./sessions/001-task-scoped-authorization-for-ai-agents/) | Task-scoped authorization for AI agents | Niki Aimable, Security Engineer at Snap | Published |
+## Repository Structure
 
-## Browse by security pattern
-
-| Pattern | Sessions |
-|---|---|
-| Least privilege | [001](./sessions/001-task-scoped-authorization-for-ai-agents/) |
-| Task-scoped authorization | [001](./sessions/001-task-scoped-authorization-for-ai-agents/) |
-| Default deny | [001](./sessions/001-task-scoped-authorization-for-ai-agents/) |
-| Argument-level controls | [001](./sessions/001-task-scoped-authorization-for-ai-agents/) |
-| Human approval | [001](./sessions/001-task-scoped-authorization-for-ai-agents/) |
-| Audit trail | [001](./sessions/001-task-scoped-authorization-for-ai-agents/) |
-| Sandboxed execution | [001](./sessions/001-task-scoped-authorization-for-ai-agents/) |
-
-This index will grow as new practitioner sessions are published.
-
-## Repository structure
+Every session follows the same structure so you can quickly find recordings, transcripts, demo code, implementation notes, and additional resources.
 
 ```text
-.
+ai-security-lab/
 ├── sessions/
 │   └── <number>-<session-title>/
 │       ├── README.md
@@ -73,55 +93,69 @@ This index will grow as new practitioner sessions are published.
 │   └── session-readme.md
 ├── CONTRIBUTING.md
 ├── CODE_OF_CONDUCT.md
-└── SECURITY.md
+├── SECURITY.md
+└── README.md
 ```
 
-Not every session will include every optional file or directory. Each session should include a concise `README.md`; transcripts, chat logs, demo code, diagrams, and additional resources are added when available and authorised for publication.
+Not every session will include every optional file or directory, but every session should include a concise README describing the implementation and key takeaways.
 
-## Propose a session
+---
 
-Open a Session Proposal issue using the repository issue template.
+## 🎤 Propose a Session
 
-Strong proposals usually include:
+We're always looking for practitioners willing to share how they're building or securing AI systems.
 
-- a real system or control already implemented
-- a clear AI security problem
-- a live technical walkthrough
-- reusable code, patterns, or lessons
-- honest discussion of limitations
+Strong proposals typically include:
 
-## Contributing
+- A real implementation running in production
+- A specific AI security challenge
+- A live technical walkthrough
+- Reusable code or patterns
+- Honest lessons learned
+
+---
+
+## 🤝 Contributing
 
 You can help by:
 
-- sharing an implementation you have built
-- suggesting a future speaker or topic
-- improving session notes
-- adding useful references
-- opening an issue or pull request
+- Sharing an implementation you've built
+- Suggesting a future speaker
+- Improving session notes
+- Adding useful references
+- Opening issues or pull requests
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for details.
+See **CONTRIBUTING.md** for details.
 
-## Support AI Security Lab
+---
 
-If this repository is useful:
+## ⭐ Support AI Security Lab
 
-- star the repository
-- share it with your team or community
-- recommend a practitioner who should present a future session
-- join an upcoming session on [Luma](https://lu.ma/aisecuritylab)
+If this repository helps you:
+
+- ⭐ Star the repository
+- 🔁 Share it with your team
+- 📢 Tell other security engineers about AI Security Lab
+- 🎤 Recommend a practitioner who should present a future session
+- 🚀 Join an upcoming live session
+
+Our goal is simple:
 
 > **Make production AI security knowledge accessible to every security engineer.**
 
-## Reuse and licensing
+---
 
-Unless a session folder states otherwise:
+## 📄 Licensing
 
-- original written content and diagrams are intended for release under CC BY 4.0
-- original code is intended for release under Apache License 2.0
+Unless otherwise stated within a session:
 
-Speakers must only contribute material they are authorised to publish. Third-party projects retain their original licences.
+- Original written content and diagrams are licensed under **CC BY 4.0**
+- Original code is licensed under **Apache License 2.0**
+
+Speakers should only contribute material they are authorised to publish. Third-party projects retain their original licences.
+
+---
 
 ## Maintained by
 
-AI Security Lab is a practitioner community initiative by [TechRiot.io](https://techriot.io).
+AI Security Lab is a practitioner community initiative by **TechRiot.io**.
