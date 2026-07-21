@@ -1,0 +1,61 @@
+name: Session proposal
+description: Propose a production-focused AI Security Lab session
+title: "[Session Proposal] "
+labels:
+  - session-proposal
+body:
+  - type: markdown
+    attributes:
+      value: |
+        AI Security Lab prioritises real implementations, live demos, and practitioner lessons.
+
+  - type: input
+    id: title
+    attributes:
+      label: Proposed session title
+      placeholder: Task-scoped authorization for coding agents
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does the implementation solve?
+    validations:
+      required: true
+
+  - type: textarea
+    id: demo
+    attributes:
+      label: What will be shown live?
+      description: Describe the working system, code, control, or workflow.
+    validations:
+      required: true
+
+  - type: textarea
+    id: production
+    attributes:
+      label: Production or testing context
+      description: Remove confidential information.
+    validations:
+      required: true
+
+  - type: textarea
+    id: speaker
+    attributes:
+      label: Speaker details
+      description: Name, role, organisation, and relevant commercial affiliation.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Safety and fit
+      options:
+        - label: The session is implementation-led rather than a product pitch.
+          required: true
+        - label: I have permission to share the proposed material.
+          required: true
+        - label: The demo will not expose secrets, personal data, or confidential information.
+          required: true
