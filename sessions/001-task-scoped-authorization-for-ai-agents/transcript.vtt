@@ -1,0 +1,1222 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:01.370
+Ashish Rajan: Unless I have to.
+
+2
+00:00:01.530 --> 00:00:03.949
+Ashish Rajan: Perfect. Alright, all yours, man. Thank you.
+
+3
+00:00:04.330 --> 00:00:05.490
+Niki Aimable: Alright, thank you.
+
+4
+00:00:05.630 --> 00:00:09.890
+Niki Aimable: And thank you everybody, really excited to be here. My name is Niki Ahmab.
+
+5
+00:00:10.090 --> 00:00:15.749
+Niki Aimable: And I've been a security engineer for a little bit over 10 years, mostly working on,
+
+6
+00:00:16.350 --> 00:00:24.009
+Niki Aimable: infrastructure security, been at different companies, including Google, Datadog, and most recently, Snap.
+
+7
+00:00:24.170 --> 00:00:35.320
+Niki Aimable: And before we get started, just, you know, putting the rigoris out there, today's discussion is going to be just my opinions, and doesn't represent any of my past or current affiliations.
+
+8
+00:00:35.650 --> 00:00:42.410
+Niki Aimable: And like I mentioned earlier, I want this to be a discussion. Don't be scared away by the slides, this is just gonna be…
+
+9
+00:00:42.530 --> 00:00:54.050
+Niki Aimable: a few minutes to kind of set the tone to look into what we are trying to demo, but I want to spend more time with the code and the working demo instead of the slides.
+
+10
+00:00:54.400 --> 00:00:59.709
+Niki Aimable: The topic of today is putting AI Agents on Least-Privileged Leash, and the…
+
+11
+00:00:59.830 --> 00:01:06.250
+Niki Aimable: Goal is to see how, different security teams out there, and some of, like, the
+
+12
+00:01:06.480 --> 00:01:13.840
+Niki Aimable: emerging approaches to having task scoped authorization. It's going to be based on open source storing, specifically.
+
+13
+00:01:13.900 --> 00:01:26.929
+Niki Aimable: one of the tools I've had the privilege to contribute on, and we'll be explaining how it works, show it in action, and share some of the anecdotes from the people that have been actually deploying it in the environment.
+
+14
+00:01:28.240 --> 00:01:39.449
+Niki Aimable: To get started, like, there is a general problem that every security team is facing today. It's like, how do I control my agents? And… and some of the…
+
+15
+00:01:40.650 --> 00:01:43.879
+Niki Aimable: Biggest challenges that these teams are asking is, like.
+
+16
+00:01:44.280 --> 00:01:58.810
+Niki Aimable: I'm not able to control up to the argument level, what the agent's gonna be doing. Yes, I can say it can access this MCP server, can access this tool, but how can I actually control the arguments that it can call these tools with?
+
+17
+00:01:59.000 --> 00:02:13.389
+Niki Aimable: Next is, like, if I have an Agentic workflow with multiple agents, how am I able to control the derogation flow? If I give access to agent A, which derogates to Agent B, how do I keep track of
+
+18
+00:02:13.390 --> 00:02:19.969
+Niki Aimable: All that flow of the task, and make sure that authority is still managed across the delegation flow.
+
+19
+00:02:20.110 --> 00:02:30.029
+Niki Aimable: Last but not least, people are like, okay, I have my agents, I have my swarm doing things in there, but I have no way of actually
+
+20
+00:02:30.480 --> 00:02:40.040
+Niki Aimable: having a verifiable way to audit everything that it has done, whether it was a load, whether it wasn't a load, and making sure that I have…
+
+21
+00:02:40.280 --> 00:02:51.630
+Niki Aimable: temper-proof evidence of everything that has happened. And this is more crucial for companies that are working in regulated industries, or where they're starting to
+
+22
+00:02:52.060 --> 00:03:08.250
+Niki Aimable: deploy their agents on sensitive information, like, user PII, and so on, or financial, or infrastructure, resources. So, this is a question that most people are asking, and what the industry has seen so far is that
+
+23
+00:03:08.450 --> 00:03:15.590
+Niki Aimable: we can't just rely on harness or, like, negotiating with the LLM themselves. The control has to be
+
+24
+00:03:15.850 --> 00:03:32.459
+Niki Aimable: more deterministic, first of all. We need to have something outside of the brain, so to speak, so that we can be sure about the behavior that's going to happen, and it has to be verifiable, like we mentioned here, so we can't rely on negotiating with the language model itself.
+
+25
+00:03:33.000 --> 00:03:34.880
+Niki Aimable: And most of the…
+
+26
+00:03:35.510 --> 00:03:47.140
+Niki Aimable: approaches that most teams have been using, typically, things like we can, you know, sandbox the agent. That's fantastic, especially if it's a local agent who can put in,
+
+27
+00:03:47.500 --> 00:04:00.480
+Niki Aimable: Docker Givisor-based or any other custom sandbox environment, but that only helps if you're worried about what the agent may be to your host environment.
+
+28
+00:04:00.540 --> 00:04:13.439
+Niki Aimable: First of all, it also means, like, it can do anything within the isolation that it's seen, but it also doesn't give you any way to govern what the agent would be able to do for remote tool calls and so on.
+
+29
+00:04:13.550 --> 00:04:29.700
+Niki Aimable: Some of the approaches I've seen is, using control based on all scopes and API keys, and typically, it's like, okay, as long as I have my scoped API key, I can give it to my agent, it will just call the MCP downstream, and everything is good.
+
+30
+00:04:29.840 --> 00:04:49.729
+Niki Aimable: But in the end, what you see is that most of the API keys people are sharing are still pretty coarse, and they act as a broad door for that agent to access the downstream services, and there's really no way to have fine-grained task-level control. I may have an API key that allows to read
+
+31
+00:04:49.750 --> 00:04:58.869
+Niki Aimable: from, say, these… Salesforce organization, but I only want to scope it to this… for this particular task.
+
+32
+00:04:59.060 --> 00:05:13.350
+Niki Aimable: And the API key can allow that in real time. I may want it to read… to use, like, if it, say, we use, like, a code record as an example, I may want it to read file, but how do I scope down to specific subfolders so that
+
+33
+00:05:13.390 --> 00:05:27.429
+Niki Aimable: For… it can only read within the scope of the task. Other approaches I've seen is people using MCP gateways and tool proxies, and similar to API cases, these are… the two are usually combined. This…
+
+34
+00:05:27.950 --> 00:05:42.200
+Niki Aimable: typically acts as, like, brokering the access to the downstream services, but they don't really have any task aware, or even a way to keep track of all the delegation chains that are happening. So it feels more like
+
+35
+00:05:42.480 --> 00:06:02.249
+Niki Aimable: the industry trying to show horn existing controls into this new architecture, when we really need to rethink about how to approach this. And another approach, obviously, is to just be like, okay, I'm just gonna be relying on whatever permission controls the framework is giving me, whether it's cloud-code, whether it's your homies, whether it's,
+
+36
+00:06:04.360 --> 00:06:21.050
+Niki Aimable: ADK, whatever framework you're using, they all have permission frameworks in the frameworks, but what we've seen is that most of them don't have a way to have a granular way to control the tool access. It's like, the access is the tool or it doesn't.
+
+37
+00:06:21.050 --> 00:06:33.509
+Niki Aimable: Second, they don't have a way of tracking delegation chains in any verifiable way, or even have a way to have a temper-proof evidence of every behavior, every tool call.
+
+38
+00:06:33.510 --> 00:06:49.429
+Niki Aimable: that the agent has done. Because what the team wants to do, if they are getting audited, if they are accessing sensitive information, is to come a week ahead and be like, okay, why did this agent actually do this? Did anybody approve this? Which permission did it to use? So that is the kind of problem space you're working on.
+
+39
+00:06:49.620 --> 00:06:56.840
+Niki Aimable: And we… I'm going to be sharing how the research… the research we worked on was approaching this problem.
+
+40
+00:06:57.440 --> 00:07:06.510
+Niki Aimable: the idea here is, like, can we have authority that follows the task? And we want to separate identity from authority here.
+
+41
+00:07:06.640 --> 00:07:26.119
+Niki Aimable: Because with this approach, we treat the identity as the seeding of the authority that an agent can have. And then we give it what we call a warrant for a given task. So you have Agent A with its identity, with whatever API case you got, but for it to do anything, it needs a specific warrant for that specific task.
+
+42
+00:07:26.190 --> 00:07:45.440
+Niki Aimable: An example I like to give to show the difference between, like, identity and authority is, like, when you go… when you have… using the valet service somewhere, you park your car, you have a very nice car, you have one choice, to give them the master key of your car, where you trust the valet, they work at the restaurant.
+
+43
+00:07:45.440 --> 00:08:00.000
+Niki Aimable: Anyway, and be like, okay, go park my car. But that way, you're just trusting their identity, and you're giving them the authority to do whatever they want with your car. They could drive around the city, they could open the trunk, they could do whatever. But if you have a specific valet
+
+44
+00:08:00.390 --> 00:08:17.789
+Niki Aimable: key that you can just give them for that particular task. That says, for example, you can drive more than 2, 20 miles per hour, you can drive beyond to my radius, you can open the trunk, because that's not really needed for the parking purposes. You can define that…
+
+45
+00:08:17.790 --> 00:08:30.899
+Niki Aimable: deterministic, task-specific artifact that limits them regardless of what they do. And that is what we really want to do to agents. We want them to think whatever they want, be creative whatever they want, but we want to keep
+
+46
+00:08:31.000 --> 00:08:38.419
+Niki Aimable: boundaries. We want to freeze the authority of what they are able to do for a given mission. And that is where the warrant,
+
+47
+00:08:38.690 --> 00:08:57.490
+Niki Aimable: as a… as a fundamental artifact comes in. And it… it has to be applied at the tool boundary, not… not negotiate with the LLM. Again, with the valet example, you… you don't care if they are nice or well-trained. If you have… and you hope they are, but you… you…
+
+48
+00:08:57.960 --> 00:09:09.070
+Niki Aimable: You were relying more on the deterministic variety you gave them, which freezes their authority more than whatever badge they are wearing, or whatever training they promised you to have gone under.
+
+49
+00:09:09.250 --> 00:09:22.349
+Niki Aimable: And for the purpose of today's conversation, I'm going to be using quote-code as an example, because it's the easiest to demo and show, but the points I'm making here apply to any type of multi-agent system.
+
+50
+00:09:22.990 --> 00:09:42.869
+Niki Aimable: So the way we look at it is, like, if you're going to have Dorian system, it needs to be sitting at the tool boundary, it needs to be sitting between the agent and the real world. So if it's calling your fire system, if it's calling your network, if it's accessing MCP tools, if it's delegating to other agents, you need that
+
+51
+00:09:42.930 --> 00:09:51.289
+Niki Aimable: Governance to be sitting right at the boundary of those actions, to be able to record what's happening and authorize what's allowed and what's not.
+
+52
+00:09:51.690 --> 00:10:08.510
+Niki Aimable: And an example here is that you could have a call-to-code running locally, trying to call a certain tool. As most of you may already know, code has two different ways. It could use, like, its native,
+
+53
+00:10:09.230 --> 00:10:13.270
+Niki Aimable: tool call method, or you could use the MOCP approach.
+
+54
+00:10:13.400 --> 00:10:27.280
+Niki Aimable: And with the approach that we're going to be looking here, the… you give the agent a warrant that it can use, and it's going to be checked on both ways. Whether it does direct call to the file system on the network, whether it uses MCP,
+
+55
+00:10:27.280 --> 00:10:37.809
+Niki Aimable: it's MCP access path, the warrant is going to be verified, and the no tool call can happen before the warrant is actually verified. The warrant will check, is this tool allowed?
+
+56
+00:10:37.830 --> 00:10:42.090
+Niki Aimable: Is this specific argument around? Is the warrant still valid?
+
+57
+00:10:42.170 --> 00:10:48.679
+Niki Aimable: And there is some other cryptographic properties we also add to make… especially when we have a multi-agent system.
+
+58
+00:10:48.690 --> 00:11:05.459
+Niki Aimable: Like, is this actual agent allowed to be using this warrant? And that is a property that makes Orient superior to your typical token, because if you see Orient lying on the street, it's not going to be useful, because it's tied to the private key of the owner.
+
+59
+00:11:05.600 --> 00:11:06.760
+Niki Aimable: And,
+
+60
+00:11:06.820 --> 00:11:20.340
+Niki Aimable: I don't want to go too much into the theory behind, but just as an idea, like, the tenure research was inspired by capability-based access control, and there is a lot of body of research behind that.
+
+61
+00:11:20.400 --> 00:11:33.519
+Niki Aimable: And what we apply here is capability with proof of possession, and that's where the cryptographic properties come in. Anyway, so the warrant is checked, all the warrants and all the tool and argument limits are verified.
+
+62
+00:11:33.530 --> 00:11:53.200
+Niki Aimable: all the delegation, if it derogates to another agent, sub-agent in the case of code-code, it needs to create a new warrant for that sub-agent, and when any of these agents try to make any total call, it's either deny a law, depending on what the warrants say, or approve. So there is also a…
+
+63
+00:11:53.200 --> 00:12:02.200
+Niki Aimable: a native admin for approval at first. But more importantly, after all this is done, there is a signed receipt for every decision that's made.
+
+64
+00:12:02.280 --> 00:12:18.989
+Niki Aimable: So you're going to have this… it's not just another log line, it will list what the agents tried to do, what was the decision, what was in the warrant, and it will be signed by an authorizer, and it will show… it will be verified against the route
+
+65
+00:12:19.230 --> 00:12:26.329
+Niki Aimable: public key of whatever this authority came from. So this allows to delegate to multi-level of Agentic
+
+66
+00:12:26.560 --> 00:12:41.749
+Niki Aimable: Workflows, even probably starting with a human and in an organization could have a broad warrant for your organization, and everybody using their laptop can… can derive their own sub-warrant, but every verification will check that it is compliant with the whole chain.
+
+67
+00:12:41.760 --> 00:12:50.749
+Niki Aimable: And the important property we get here is that the verification can be done cryptographically with a cryptographic proof.
+
+68
+00:12:50.750 --> 00:13:02.229
+Niki Aimable: But there is no, server round trip to be made here. So all the verification is made locally, which is good for performance, and also allows flexibility to deploy this in
+
+69
+00:13:02.350 --> 00:13:07.749
+Niki Aimable: Remote environments where maybe the internet is not reliable, or where you have
+
+70
+00:13:07.960 --> 00:13:11.239
+Niki Aimable: different identity domains, for example.
+
+71
+00:13:12.090 --> 00:13:30.749
+Niki Aimable: And we talked about the enforcement points could be the, for those that are familiar on how, like, Crowd2Code is implemented, we… we hook our tenure authorizer on the pre-tool use hook that Crowd2Code provides, that's our integration point, and for MCP, it acts as a MCP proxy.
+
+72
+00:13:30.790 --> 00:13:37.870
+Niki Aimable: And when you have it on your laptop, as we'll see in a minute, it could be a native binary on your laptop, or a Docker container.
+
+73
+00:13:37.880 --> 00:13:53.040
+Niki Aimable: That would be checked, and there are performance implications here, depending on… on which approach you use. But, our benchmarks usually show when you use the 10-year period, like the binary, the actual,
+
+74
+00:13:53.040 --> 00:14:03.299
+Niki Aimable: verification time is about… is around, like, 50 microseconds per, decision, but when you have a Docker container, there is a little bit of,
+
+75
+00:14:03.520 --> 00:14:06.130
+Niki Aimable: performance,
+
+76
+00:14:07.190 --> 00:14:24.179
+Niki Aimable: performance impact there, but you end up still within 2 milliseconds of verification time. So you have the warrant that can be used across these enforcement points. And how is this done? So the engine, the Tenno engine is open source. We're gonna use, like, it's, called Code…
+
+77
+00:14:24.360 --> 00:14:28.699
+Niki Aimable: Integration variant, which is open source, we have different demos.
+
+78
+00:14:28.750 --> 00:14:40.499
+Niki Aimable: And an example is, like, you can just pip install the tool, and you're given… you can define a YAML policy, you have your policy name, you define your sandbox, whatever.
+
+79
+00:14:40.520 --> 00:14:55.399
+Niki Aimable: some further you want to… to allow your agent to have access to, you can start with dry run if you don't want it to enforce right away, which is what we're going to be doing with our demo, and you can define how it's going to be enforced in different types of tools. Like, for…
+
+80
+00:14:55.470 --> 00:15:08.430
+Niki Aimable: directive read for quality codes. You can define the subpath to that specific sandbox you defined above. You can define which, arguments you allow it… you allow it to… which, command line,
+
+81
+00:15:11.630 --> 00:15:23.860
+Niki Aimable: which command… commands you want it to learn on Bash. You can define which domains it can call with Web Fetch. Any tool that calls… even in the future, if QuoteCore defines any
+
+82
+00:15:23.960 --> 00:15:41.060
+Niki Aimable: type of tool, you can always define it here. And when we use default deny, this means, like, any unknown tool by default is denied. You can… you can make it a law, you can make it approved, but we start with denial. So if a tool is not defined explicitly here, we'll deny. You can define sub-agents.
+
+83
+00:15:41.940 --> 00:15:48.060
+Niki Aimable: CrowdCode allows you to have some agents, and you can also define which… what's going to be…
+
+84
+00:15:48.190 --> 00:16:04.499
+Niki Aimable: in the, in the warrant given to those subagents. Again, the idea here, which is based on the capability systems, is that at derogation, the child agent can never have more authority than the parent. That is the principle,
+
+85
+00:16:04.610 --> 00:16:08.269
+Niki Aimable: Behind, capability-based systems.
+
+86
+00:16:08.450 --> 00:16:16.889
+Niki Aimable: So we'll do a demo with Dry Run, and then go into enforcement modes, and we want to show how it can,
+
+87
+00:16:16.940 --> 00:16:33.070
+Niki Aimable: deny, when cold call tries to read our scope file, how it denies if cold call tries to do network call MCP call, we see how it tracks sub-agent delegation, and when the sub-agent tries to do what's beyond its scope, and see how the signed
+
+88
+00:16:33.320 --> 00:16:41.730
+Niki Aimable: Warrant is verified, and they will sign the receipt. We'll see the prop… the, cryptographic properties, and then later on, we will see
+
+89
+00:16:41.830 --> 00:16:48.320
+Niki Aimable: We'll share some anecdotes of how some teams have been approaching this in practice.
+
+90
+00:16:49.010 --> 00:16:51.549
+Niki Aimable: This is how the verifiable… okay?
+
+91
+00:16:51.550 --> 00:16:56.469
+Ashish Rajan: I was gonna ask a question, sorry, I raised my hand, I was like, oh, maybe you'll see it, but maybe you didn't.
+
+92
+00:16:56.470 --> 00:16:57.609
+Niki Aimable: Yeah. If you're gonna go…
+
+93
+00:16:57.610 --> 00:17:02.329
+Ashish Rajan: Go back to slide 8, I just had a question over there, because before you jump from the demo thing, because…
+
+94
+00:17:02.500 --> 00:17:07.590
+Ashish Rajan: I obviously have been working with Claude, so I understand the pre, tool, use, hook.
+
+95
+00:17:07.890 --> 00:17:17.499
+Ashish Rajan: And, MCPs, local… so we have a few people who are probably using OpenWade, GPT as well. In the work that you've done with the open source
+
+96
+00:17:17.849 --> 00:17:27.849
+Ashish Rajan: project that you've released, does this apply to other, like, OpenWeight, ChatGPT, or Codex? Does it apply there as well?
+
+97
+00:17:28.800 --> 00:17:30.969
+Niki Aimable: So, so right now…
+
+98
+00:17:31.030 --> 00:17:49.279
+Niki Aimable: we have, like, so there is, like, the Teno engine, the core engine, which has some native integration. So, quote-unquote is one of the integrations. We have other, like, orchestration frameworks, like, the OpenAI SDK, ADK, we have Temporo, we have,
+
+99
+00:17:49.700 --> 00:17:56.299
+Niki Aimable: Crew AI. We have some people working on Hermes, which is gonna be released in the next couple of weeks.
+
+100
+00:17:56.730 --> 00:17:59.340
+Niki Aimable: We have…
+
+101
+00:18:00.490 --> 00:18:16.380
+Niki Aimable: there is, like, about 9 frameworks that are now supported. Codex is not supported yet, just in the open source version. But, like, it's pretty much the same mechanism, it's just that, yeah, and the part of this is actually, like, looking for people who want to collaborate to
+
+102
+00:18:16.510 --> 00:18:18.980
+Niki Aimable: Take the same…
+
+103
+00:18:19.530 --> 00:18:26.409
+Niki Aimable: the same concept and applies to any other integration they want to do, because it's all open source, and anybody can use the engine.
+
+104
+00:18:26.710 --> 00:18:43.569
+Ashish Rajan: Yeah, oh, cool, and I guess, to your point, there may be similar mechanisms there as well, because I guess one more question on… sorry, I have a few questions, but if everyone… anyone else has a question as well, please feel free to raise hand. I don't have to take over the entire thing. But if you go a couple of slides up as well…
+
+105
+00:18:43.680 --> 00:18:49.190
+Ashish Rajan: Which is… Yeah, this… this… no, the one before?
+
+106
+00:18:51.210 --> 00:18:53.680
+Ashish Rajan: I think it was around sandboxing.
+
+107
+00:18:55.340 --> 00:18:57.400
+Niki Aimable: I think the… yeah, this is the one I talked about.
+
+108
+00:18:57.400 --> 00:19:07.870
+Ashish Rajan: Oh, yeah, yeah, yeah. So, this one is an interesting one for me, particularly. So, I obviously work with a lot of financial institutes and, let's just say Fortune 500, Fortune 100 companies.
+
+109
+00:19:07.870 --> 00:19:19.439
+Ashish Rajan: A lot of them have either decided not to go down the MCP gateway path or tool proxies, but I'm curious, obviously, you've worked on an open source project to have this part of the cloud code
+
+110
+00:19:19.530 --> 00:19:27.130
+Ashish Rajan: And other, coding agents, which, obviously, in most of these enterprise companies, they use the sandboxing.
+
+111
+00:19:27.270 --> 00:19:31.430
+Ashish Rajan: Would it be fair to say, because you're using pre-tool hook.
+
+112
+00:19:31.740 --> 00:19:36.920
+Ashish Rajan: Would that still work in sandboxing? Because you're technically still using Cloud Code, it's just a sandbox environment?
+
+113
+00:19:37.430 --> 00:19:55.949
+Niki Aimable: Yes, yes, and that is actually a good question. Like, yeah, using Tenuo does not replace any of these. Like, you can have it on the top of your sandbox. So it just means, like, it gives you more granular control on the top of the sandbox, but as far as your fire system is concerned, the sandbox still does its job, so it's not a replacement.
+
+114
+00:19:56.040 --> 00:20:07.930
+Niki Aimable: Same thing with, like, people who have even gateways. You can have tenure verifier as… as just part of your gateway, and it's just gonna do its magic transparently as a proxy as well.
+
+115
+00:20:08.880 --> 00:20:31.080
+Ashish Rajan: Do you have examples of MCP Gateway? Because I think, again, sorry, everyone, please feel free to raise your hand. I'll just… I think I'm listening to all this, I'm having all these questions, so hopefully I'm asking questions on what's already top of mind for a lot of people, but feel free to ask the question as well. With the MCP gateways and tool proxies, I haven't seen a use case for it. Could you just explain…
+
+116
+00:20:31.380 --> 00:20:47.309
+Ashish Rajan: How does it work at a large scale, like the MCP Gateway and Tool Proxy? Is it more like… if I were to think of this from an architecture perspective, I have an organization where I have, say, 5,000 developers, let's just say even 100 developers.
+
+117
+00:20:47.310 --> 00:20:52.310
+Ashish Rajan: who use some version of Cloud Code, or Crew AI, or whatever.
+
+118
+00:20:52.440 --> 00:20:56.389
+Ashish Rajan: MCP Gateway is… how do you see that being used?
+
+119
+00:20:56.530 --> 00:21:00.769
+Ashish Rajan: And someone, are there any similar patterns for cloud agents as well? That's a question from Jeff.
+
+120
+00:21:01.660 --> 00:21:09.899
+Niki Aimable: Yes, so the examples I've seen, like, for the likes of, in the open source world, like, there is, like, Agent Gateway, literally, that's the name of the open source.
+
+121
+00:21:10.080 --> 00:21:16.410
+Niki Aimable: framework. There's some vendors, like Arcade.dev, that are also working in that space. The common…
+
+122
+00:21:16.610 --> 00:21:27.529
+Niki Aimable: approach here is, like, you have your teams have just one AMCP they talk to, and that is, like, the MCP gateway. So there is just one, just like any, like,
+
+123
+00:21:27.670 --> 00:21:34.190
+Niki Aimable: Like, how people usually, deal with any proxying, so it's gonna be, say, cloud-based.
+
+124
+00:21:34.230 --> 00:21:49.129
+Niki Aimable: And the advantage it gives is that you can configure any local agent to just talk to one endpoint, and no other call outside of that path is allowed. And that endpoint translates every call to the downstream MCP server.
+
+125
+00:21:49.270 --> 00:22:05.599
+Niki Aimable: And the biggest advantage it gives is that control, but also, like, managing long-term credentials that you may need for downstream services. You don't want everybody on their laptop to have API keys for your Jira MCP, your Salesforce MCP, and so on.
+
+126
+00:22:05.600 --> 00:22:14.420
+Niki Aimable: If you can just keep that in the… in the gateway, and just tell people, hey, you just talk to the gateway, maybe using your… this OAuth token, whatever.
+
+127
+00:22:14.420 --> 00:22:22.849
+Niki Aimable: And all the translation, happened at the proxy level. That's the approach that I've seen that most people use.
+
+128
+00:22:23.030 --> 00:22:36.799
+Niki Aimable: And it usually works best when the MCP… the target MCP servers are actually remote servers. It… it's still helpful, but not as efficient when
+
+129
+00:22:37.010 --> 00:22:55.650
+Niki Aimable: it's a local MCP server, you could literally have an MCP server on your laptop, so in that case, it may not make sense to do the round trip to a cloud-based gateway to come back. But yeah, that is the pattern I've seen. The biggest advantage is to avoid the sprawl of long-term credentials.
+
+130
+00:22:55.650 --> 00:22:57.019
+Niki Aimable: And to be able to…
+
+131
+00:22:57.250 --> 00:23:03.289
+Niki Aimable: to limit, from a network point of view, to just one, egress MCP server.
+
+132
+00:23:04.100 --> 00:23:09.689
+Ashish Rajan: I was gonna say, Jeff, did you want to unmute and just ask a question? Because I don't want to butcher in case you wanted to ask something else.
+
+133
+00:23:09.990 --> 00:23:25.830
+jeff: Yeah, so, you know, my use case is that we have, you know, our developers use a lot of both local agents, but also a lot of cloud agents. A really common pattern is a bug reported in Slack, and then we call, you know, whatever tool we're using, you know, just from Slack itself, so…
+
+134
+00:23:25.830 --> 00:23:35.399
+jeff: the challenge is that I see often that the cloud agent has more access than the person calling it to do something.
+
+135
+00:23:36.080 --> 00:23:37.429
+jeff: And you know, I don't…
+
+136
+00:23:38.170 --> 00:23:43.469
+jeff: I don't, you know, like, with our… with how we have it set up, that's a… that's been a tough nut to crack.
+
+137
+00:23:43.470 --> 00:23:44.040
+Ashish Rajan: Hmm.
+
+138
+00:23:44.220 --> 00:23:58.530
+jeff: So, you know, I'm looking for just examples, or anyone else who's encountered this who has a way to say, okay, well, you know, you can't call a cloud agent and ask it to do something that it can do that you can't. You know, we've just… I think I've struggled with trying to… with trying to solve that.
+
+139
+00:24:00.250 --> 00:24:07.300
+Niki Aimable: Yeah, there's a few cases like that, but just to be clear, can you give me, like, an example of the stack that I'm using for the cloud agent?
+
+140
+00:24:07.750 --> 00:24:24.480
+jeff: It'll be, up… I mean, we'll… so we'll call stuff to, you know, fix… fix bugs in the codebase, make changes to our cloud platforms. Our agents, unfortunately, pretty, pretty widely privileged, just, unfortunately, it's the nature of a startup. And although nothing.
+
+141
+00:24:24.480 --> 00:24:27.789
+Niki Aimable: Is it, like, running on Kubernetes, or, or, like,
+
+142
+00:24:27.790 --> 00:24:32.739
+jeff: Agents? No, the Agents are, like, you know, we use a lot of cursor, so just the.
+
+143
+00:24:34.200 --> 00:24:36.950
+Niki Aimable: Okay, okay. Yeah, so…
+
+144
+00:24:37.090 --> 00:24:43.600
+Niki Aimable: there is a… I've seen different patterns, and Kirsa, in that case, is, like, either self-hosted, or if you host it yourself.
+
+145
+00:24:43.800 --> 00:24:58.389
+Niki Aimable: And it depends on, like, how you want it to interact with the outside world. So, here I use the example of the coding local Agents, because that's easy to demo, but this applies to anywhere this could be deployed. If you have the cursor running in a VM somewhere.
+
+146
+00:24:58.400 --> 00:25:03.840
+Niki Aimable: Or running in a, like, in any other environment.
+
+147
+00:25:04.330 --> 00:25:24.289
+Niki Aimable: So you… it has to have some way to talk to the outside world, and if it's cloud-based, it's typically either MCP or a web API call. And the patterns we've seen here with, like, proxying web API calls through Teno can be, like,
+
+148
+00:25:24.420 --> 00:25:41.149
+Niki Aimable: a faster API proxy as well. You could have it as any other MCP proxy for, again, for any outbound MCP tool call that it's doing. A pattern I've seen specifically for Kubernetes, if it's running on a Kubernetes.
+
+149
+00:25:41.150 --> 00:25:53.929
+Niki Aimable: For people who have Kubernetes service mesh, they know how you typically have either, like, a mesh gateway or a sidecar on each pod that's… that's verifying every egress.
+
+150
+00:25:53.950 --> 00:26:03.889
+Niki Aimable: Traffic, and Tenuo could be one of the extensions of… of your sidecar, could run as a sidecar for any outgoing call.
+
+151
+00:26:03.980 --> 00:26:16.589
+Niki Aimable: And so, it's basically, like, the agent somehow has a way to talk to the downstream tools, and if the network can be a proxy, depending on the mechanism you use, it can do the verification in that path.
+
+152
+00:26:17.870 --> 00:26:20.230
+Niki Aimable: I don't know if that answers the question.
+
+153
+00:26:20.230 --> 00:26:22.380
+jeff: That answers my question. Thank you so much, I appreciate it.
+
+154
+00:26:23.270 --> 00:26:24.310
+Niki Aimable: No problem.
+
+155
+00:26:24.870 --> 00:26:25.220
+Ashish Rajan: Another one.
+
+156
+00:26:25.790 --> 00:26:30.339
+Ashish Rajan: I think, sorry, there was… maybe Narayan had a question? Or did I got that wrong?
+
+157
+00:26:31.160 --> 00:26:34.060
+Ashish Rajan: I know someone… maybe they have answered their question.
+
+158
+00:26:35.310 --> 00:26:35.830
+Niki Aimable: Oh, great.
+
+159
+00:26:35.830 --> 00:26:36.870
+Ashish Rajan: Ignore me, maybe it's been out.
+
+160
+00:26:36.870 --> 00:26:39.530
+Narayan Ram Narayanan (_n2r_): No, I just had, like, a small…
+
+161
+00:26:39.700 --> 00:26:43.589
+Narayan Ram Narayanan (_n2r_): point there, because I encountered a similar error in my workplace.
+
+162
+00:26:43.670 --> 00:27:01.690
+Narayan Ram Narayanan (_n2r_): So what we did is we gave all the agents, like, how we have, like, entitlements and all the stuff for each individual user. We gave that to the agent as well, as in, like, we provided the exact identity that we had, and we were able to call using that. I didn't know if that was a good answer for that question, so I just lowered my hand.
+
+163
+00:27:03.620 --> 00:27:07.980
+Niki Aimable: Yeah, so that is, like, one of the approaches, especially to solve the irrigation problem.
+
+164
+00:27:08.100 --> 00:27:23.290
+Niki Aimable: And one of the Agents you actually make here is that that's not always, like, the best option to basically hand over the user authority to the agent. The whole, like, the whole concept I mentioned earlier of the…
+
+165
+00:27:23.430 --> 00:27:40.500
+Niki Aimable: of capability-based access control is that the user's access should be the ceiling, but the agent should have narrower authority depending on the task that it's doing. Otherwise, there is always that risk of, confused deputy where the agent just hallucinates and uses whatever access it happens to have, because the user has it.
+
+166
+00:27:40.620 --> 00:28:00.460
+Niki Aimable: So we need the mechanism at least, to give the governance team an ability to narrow down that access for each one of the agents that the user is using, rather than just plain… giving everything to the user. So this 10-woo approach basically gives you the buttons that can allow you to,
+
+167
+00:28:00.900 --> 00:28:17.279
+Niki Aimable: to toggle that and be like, okay, if this agent just needs to research, then it just needs read to access, and maybe just read this folder or this file. If it just needs to fetch logs, then it doesn't really need access to read,
+
+168
+00:28:17.330 --> 00:28:26.520
+Niki Aimable: This is the environment. I will show that in the demo, and just, like, to finish here, I was showing how the evidence will show what tool, the argument, the decision made.
+
+169
+00:28:26.650 --> 00:28:32.910
+Niki Aimable: The warrant that was used, how many hopes of derogation have happened, and it's always going to be signed.
+
+170
+00:28:33.080 --> 00:28:34.270
+Niki Aimable: And,
+
+171
+00:28:34.600 --> 00:28:44.729
+Niki Aimable: And before I go there, there is, like, a whole deep dive you can do. You can check out the actual core engine behind this. The 10-no code we're using here is just an application to code the cards.
+
+172
+00:28:44.800 --> 00:28:59.450
+Niki Aimable: But the engine can be found on this GitHub, and we've been working with the IETF Woolworth for standardizing this approach, what we call the attenuating authorization tokens for Agentic degradation chains.
+
+173
+00:28:59.470 --> 00:29:05.750
+Niki Aimable: So there's a lot of ways to… to contribute and read the more on the research and the…
+
+174
+00:29:05.860 --> 00:29:10.320
+Niki Aimable: And look into the ideas from different practitioners in this space.
+
+175
+00:29:10.640 --> 00:29:21.760
+Niki Aimable: With that said, now we can, move on to the… demo. We'll share different… Screen real quick.
+
+176
+00:29:22.610 --> 00:29:24.380
+Niki Aimable: Okay…
+
+177
+00:29:37.100 --> 00:29:41.409
+Niki Aimable: I don't know if you're able to see my, my CLI.
+
+178
+00:29:43.820 --> 00:29:45.029
+Ashish Rajan: Yes, we… yes, we can.
+
+179
+00:29:46.040 --> 00:29:51.540
+Niki Aimable: Okay, so in this case, like, I have the 10 o'clock,
+
+180
+00:29:52.020 --> 00:29:58.380
+Niki Aimable: installed, right, and I can do… I'll just check how it is set up.
+
+181
+00:29:59.030 --> 00:30:06.699
+Niki Aimable: This is, like, environment check. I can do… I can check, like, my policy here, if I do…
+
+182
+00:30:06.740 --> 00:30:19.099
+Niki Aimable: I told you that it's the one, like, a YAML file you usually have. In this case, there's a lot of comments here for demo purposes, but you have just the name of the policy, you define whatever sandbox which is the…
+
+183
+00:30:19.200 --> 00:30:21.980
+Niki Aimable: Some folder you want your agents to be limited to.
+
+184
+00:30:22.240 --> 00:30:26.840
+Niki Aimable: And more importantly, you can start with,
+
+185
+00:30:26.960 --> 00:30:34.489
+Niki Aimable: defining the, the mod here, the firstment mod. It's a dry run that we're going to be using at first.
+
+186
+00:30:34.630 --> 00:30:41.189
+Niki Aimable: And you find which tools, subpart means, like, under this folder, you can edit, these are all the…
+
+187
+00:30:41.190 --> 00:30:56.060
+Niki Aimable: Settings you can modify, you can find which command it can run… it's able to run, and even specific commands if you wanted to, because this can be used for chaining commands, so important to define those as well.
+
+188
+00:30:56.060 --> 00:31:03.089
+Niki Aimable: If you define, like, for tools like WebFetch, you can define the domains, and more importantly, there is a lot of nuance in this space.
+
+189
+00:31:03.190 --> 00:31:08.699
+Niki Aimable: And there's been a lot of, like, a series about how this tool can be manipulated for,
+
+190
+00:31:09.150 --> 00:31:14.989
+Niki Aimable: for different, you know, for SSRF attack, and we make sure that, actually, if you…
+
+191
+00:31:15.390 --> 00:31:23.309
+Niki Aimable: You define the policy, nobody can, bypass that. And we have, for example.
+
+192
+00:31:23.780 --> 00:31:30.439
+Niki Aimable: we allow to… like I mentioned, you can deny by default any… an unknown tool. You can define a sub-agent. In this case.
+
+193
+00:31:30.520 --> 00:31:45.139
+Niki Aimable: I just defined the sub-agent called Researcher. I will show how it looks like in a minute, and you have… I have created just a fake MCP server to show, like, how any, MCP call would be…
+
+194
+00:31:45.630 --> 00:31:55.559
+Niki Aimable: consulted in… in the… in this… in this kind of situation. Now, after looking at the policy, we can… we can, for example, see, like.
+
+195
+00:31:56.330 --> 00:32:03.969
+Niki Aimable: Let me show first, like, how the, the researcher looks… the researcher sub-agent, just so we know.
+
+196
+00:32:06.330 --> 00:32:07.329
+Niki Aimable: Oh, my man.
+
+197
+00:32:07.580 --> 00:32:09.249
+Niki Aimable: Okay, I'll real…
+
+198
+00:32:17.430 --> 00:32:34.969
+Niki Aimable: This is just an effect sub-agent I met. It's called a researcher, which can do this and that. But again, this is, like, in the definition of the researcher, all these tools, like, the actual tenure verification is outside of the agent loop, which is the whole point of having deterministic governance, is that
+
+199
+00:32:34.970 --> 00:32:49.249
+Niki Aimable: you're not negotiating with the agent. It can have whatever it wants, but our control is in the outside policy file that I showed you. And some of the questions that may come here is like, oh, what if somebody modifies the file? We'll talk about those deployment scenarios later on.
+
+200
+00:32:49.490 --> 00:32:55.249
+Niki Aimable: But, like, what I… what you can do right now, after defining your policy, you can do…
+
+201
+00:32:55.450 --> 00:33:07.409
+Niki Aimable: you know, called Verify to see the policy applied. So, it allows to read in the sandbox, you know, listed, all listed tools.
+
+202
+00:33:07.600 --> 00:33:24.679
+Niki Aimable: And everything that works on the policy is defined here. And the transport here, this is where the authorizer's actually running. It's a local Docker container that will do the verification and give the results. Now, I'm going to try a quick command here, which is, as we saw.
+
+203
+00:33:25.670 --> 00:33:38.419
+Niki Aimable: as we saw in the policy, it should be able to read in the sandbox only, but I'm going to invoke Claude to be like, hey, can you read fake secret Ms and print it? And I can even add, you know, dangerous risky permissions.
+
+204
+00:33:38.690 --> 00:33:40.669
+Niki Aimable: And in this case.
+
+205
+00:33:45.780 --> 00:34:00.189
+Niki Aimable: Let's see if code respects my commands… yeah, it does. So, I just… I have this file, which just happens to be outside of the sandbox, and it has all this information, and and the code went… went ahead and boy.
+
+206
+00:34:00.340 --> 00:34:07.480
+Niki Aimable: And if I do a tenure code audit, I'm able to see
+
+207
+00:34:07.630 --> 00:34:14.490
+Niki Aimable: Like, when it… so there is a lot of other things that it has done, and it usually shows you…
+
+208
+00:34:26.510 --> 00:34:33.929
+Niki Aimable: So yeah, like, I can see that it was trying to…
+
+209
+00:34:34.170 --> 00:34:40.349
+Niki Aimable: to read, it basically shows me the path that it was trying to read, and because I'm in, in, in,
+
+210
+00:34:40.480 --> 00:34:59.390
+Niki Aimable: In dry mode, it's just say it will do deny, but it doesn't actually deny. So this is, like, the dry run approach you can do to just… to keep all this work, maybe send them to your SIM, and you're able to see, like, basically, if you had enforcement mode, what cloud would behave like, what tenure would be able to stop, and what it wouldn't be able to stop.
+
+211
+00:34:59.390 --> 00:35:04.699
+Niki Aimable: I'm gonna try another example, like, with a network call. In this case…
+
+212
+00:35:05.500 --> 00:35:11.590
+Niki Aimable: Again, to… to remind you about Babu policy, we have…
+
+213
+00:35:12.820 --> 00:35:17.910
+Niki Aimable: We have our web… web fetch limited to a URL. The URL,
+
+214
+00:35:20.490 --> 00:35:39.310
+Niki Aimable: Gonna show how it's defined. The URL is, like, either github.com or, like, tenure.ai, so I'm going to ask it to fetch rumor… to basically get details on our events, on our events, on our event today, and summarize it for me. And here, I'm not even relying on cloud permissions.
+
+215
+00:35:39.800 --> 00:35:40.790
+Niki Aimable: I'm…
+
+216
+00:35:41.830 --> 00:35:52.030
+Niki Aimable: It's going to make the network call. I don't expect this to be stopped, because we are in dry mode, but the most important piece is that when we're still in dry mode, we're able to see
+
+217
+00:35:52.270 --> 00:35:55.469
+Niki Aimable: The audit logs of everything that has happened.
+
+218
+00:35:55.680 --> 00:36:01.010
+Niki Aimable: So this is a live Zoom event, so it's doing what it's supposed to do, whatever, it's summarizing our event.
+
+219
+00:36:01.130 --> 00:36:04.520
+Niki Aimable: And if I do…
+
+220
+00:36:04.600 --> 00:36:24.009
+Niki Aimable: our audit, so I see the event that would be denied if we were not in a dry run. So, tries the web fetch. These are the tools that Kodo's doing underneath, and basically, this is all coming from Tenuo as a proxy, recording everything that's happened. So, whether you're doing a local tool call, whether you're calling a remote.
+
+221
+00:36:24.010 --> 00:36:29.769
+Niki Aimable: API, whether using… let me see if I can find an example I can use of, an MCP.
+
+222
+00:36:30.500 --> 00:36:35.300
+Niki Aimable: Whatever you try to do, it will always… it will always be able to block.
+
+223
+00:36:35.630 --> 00:36:41.650
+Niki Aimable: I will show… an example here of an MCP.
+
+224
+00:36:44.810 --> 00:36:46.450
+Niki Aimable: Zipper control.
+
+225
+00:36:46.990 --> 00:36:50.199
+Niki Aimable: So here I'm asking Claude, hey, use…
+
+226
+00:36:50.360 --> 00:37:02.240
+Niki Aimable: Soono files, MCP server, the one, the MCP I created directly, to read the sandbox notes, here they are in the sandbox, great, then read the FACM secrets, then read deployment for production.
+
+227
+00:37:02.920 --> 00:37:03.690
+Niki Aimable: Okay.
+
+228
+00:37:08.140 --> 00:37:15.260
+Niki Aimable: So this is allowed, should be allowed, this should not be allowed, and this should definitely…
+
+229
+00:37:15.660 --> 00:37:27.130
+Niki Aimable: Not be allowed. So, okay, so in this case, okay, this is the danger of always, like, deploying with LLMs, like, the LLM itself refused to do this, essentially.
+
+230
+00:37:28.150 --> 00:37:36.569
+Niki Aimable: I can force it to do it, or try to trick it to convince it, but what I want to show here
+
+231
+00:37:36.580 --> 00:37:52.250
+Niki Aimable: generally, it's not that I can trick the RM, it's that in the case that the RM is tricked or hallucinates to do an action that is not allowed, it will still be able… it will still be able to block that based on the…
+
+232
+00:37:52.510 --> 00:37:54.600
+Niki Aimable: On the policy.
+
+233
+00:37:56.480 --> 00:38:03.340
+Niki Aimable: Can… just let me… Aimable to, I'm not sure, session here.
+
+234
+00:38:07.100 --> 00:38:08.370
+Niki Aimable: Try…
+
+235
+00:38:16.020 --> 00:38:18.049
+Niki Aimable: I'll give you the semi-text again.
+
+236
+00:38:32.780 --> 00:38:49.100
+Niki Aimable: Yeah, I will allow it for the moment. So, like, this is more like a, like, even if the permissions of the… of the… of, like, you call the code allows it, there is gonna be an external… there is gonna be, this is more… if I do, like, a skip permissions.
+
+237
+00:38:50.360 --> 00:38:53.229
+Niki Aimable: It's still going to be blocked outside.
+
+238
+00:38:55.370 --> 00:39:06.750
+Niki Aimable: And this is important, especially if you are… if you are doing it, you see that the calls go through, we can try and see if I will find the,
+
+239
+00:39:13.430 --> 00:39:14.250
+Niki Aimable: Triumph.
+
+240
+00:39:14.380 --> 00:39:22.249
+Niki Aimable: So yeah, I see the MCP calls, it's IT, or to deny the deployment, or to deny the… all these MOCP calls.
+
+241
+00:39:22.860 --> 00:39:27.600
+Niki Aimable: And, I think I smelled a little too much here.
+
+242
+00:39:28.440 --> 00:39:47.060
+Niki Aimable: this was allowed, yeah, the sandbox notes, these are allowed by the policy. So basically, it shows you which… because you're in dry mode, it shows you which tool to deny and which to do not deny. And that is how you get to see that the outside control is doing what it's supposed to do, and not relying on the…
+
+243
+00:39:47.180 --> 00:39:50.750
+Niki Aimable: On the decision made.
+
+244
+00:39:50.980 --> 00:39:58.699
+Niki Aimable: made by the, the agent. So before we move to enforcement mode, real quick, is there anybody who has any questions, up at this point?
+
+245
+00:40:01.060 --> 00:40:11.800
+Ashish Rajan: I was gonna ask, how do you kind of… so, to your point, in what you showed on the screen before, would it be fair to say, if, say, any one of us wanted to use the open source project.
+
+246
+00:40:12.050 --> 00:40:17.969
+Ashish Rajan: We would have to have this… some kind of an MDM to deploy this across other developers.
+
+247
+00:40:18.400 --> 00:40:19.449
+Ashish Rajan: Even for the drivers?
+
+248
+00:40:19.450 --> 00:40:35.199
+Niki Aimable: Yeah, you're asking the right questions now, yeah. Like, from a natural practical deployment point of view, you would have to have an MDM that pre-installs it into every one of the developer machines, and you can have an umbrella policy that it's deployed with.
+
+249
+00:40:35.720 --> 00:40:39.870
+Niki Aimable: And so you… from, like, a control plane point of view, you push the…
+
+250
+00:40:40.240 --> 00:40:54.099
+Niki Aimable: I would say, like, the umbrella policy for our engineers, and whatever they are doing, they can have narrower policies. And… or you could even have, like, individual different policies, depending on, say, what you… which MCP server you want your engineers to have access to, your finance team to have access to.
+
+251
+00:40:54.100 --> 00:41:06.199
+Niki Aimable: But for it to be really effective… to be a true control, it has to be through MDM. Because otherwise, obviously, if somebody removes Tenuo from this, then protocol will do whatever it wants.
+
+252
+00:41:06.200 --> 00:41:06.570
+Ashish Rajan: Yep.
+
+253
+00:41:06.570 --> 00:41:10.760
+Niki Aimable: And, and if someone changes the policy.
+
+254
+00:41:10.980 --> 00:41:20.409
+Niki Aimable: they would be able to also bypass your policy. So if you have, the control, like, the, the, the,
+
+255
+00:41:20.410 --> 00:41:32.069
+Niki Aimable: deployment model that deploys it with a head policy, which is already signed cryptographically, then they can't change the local policy, because every verification checks whether the policy is narrower than the parent policy.
+
+256
+00:41:32.190 --> 00:41:39.709
+Niki Aimable: So the principle is that the individual users would never have more access than what the parent warrant was allowing them to do. That's a really good question.
+
+257
+00:41:40.060 --> 00:41:55.389
+Ashish Rajan: And I guess, too, what you… also, actually, what Jeff and Narayan were saying earlier, if we wanted to just monitor who has excessive permissions, we can actually still use a dry run mode for that as well, because technically… I, as a developer, would not see anything being blocked, but I can see…
+
+258
+00:41:55.470 --> 00:42:02.469
+Ashish Rajan: if I'm making actions which are, quote-unquote, supposed to be stopped, then I can have a conversation about it.
+
+259
+00:42:03.050 --> 00:42:20.329
+Niki Aimable: Yes, yeah, and that is the whole point of doing this in Drymore. Like, as you saw when I run, when I actually run Cloud, like, it doesn't know that there is anything happening in, like, in there. Like, Tenu acts here, like, as a completely transparent proxy, and what it tells you is, like.
+
+260
+00:42:20.410 --> 00:42:34.319
+Niki Aimable: I would deny this, like, this would be denied, but from the developer point of view, they don't notice anything. And that is a good way to monitor actual running time through calls, maybe before you can, switch on to enforcement.
+
+261
+00:42:34.870 --> 00:42:44.209
+Ashish Rajan: Yeah, awesome. Thanks, man. Yeah, because I think I've seen people use it to build a case study for, hey, this is why we need to have stronger controls and stuff, so… but no, thanks for sharing it.
+
+262
+00:42:45.200 --> 00:42:57.040
+Niki Aimable: Yeah, and, and before, like, maybe even anybody asks this, like, this is more, like, this is a different layer than, your, your, your traditional host monitoring, because this is more, like, agent.
+
+263
+00:42:57.220 --> 00:43:09.599
+Niki Aimable: like, Agent Native, in the sense that it can actually understand what is a tool called, what is an MCP server, as opposed to if you're just monitoring your processes on your operating system, all you see is just a cloud
+
+264
+00:43:09.870 --> 00:43:27.289
+Niki Aimable: like, a process, that's it. But this is… it is able to actually decode, like, an agent-level traffic, and it gives you the kind of logs that… that can actually make sense to you. And after I've done this, like, I can do, like, audit to verify.
+
+265
+00:43:31.760 --> 00:43:34.190
+Niki Aimable: I'm sorry, what's up, man, I've been…
+
+266
+00:43:34.900 --> 00:43:39.369
+Ashish Rajan: Just letting you know, by the way, we have 5 more minutes before we have to start wrapping up.
+
+267
+00:43:40.100 --> 00:43:44.919
+Niki Aimable: Okay, okay, I'll quickly move to enforcement. So…
+
+268
+00:43:45.190 --> 00:44:00.400
+Niki Aimable: So, so basically, here I wanted to see… to say how… how, like, even, like, the cryptographic properties here, like, every… every, receipt is assigned in the sense that you can… when you export it, you can verify the signature against dilute.
+
+269
+00:44:00.530 --> 00:44:11.669
+Niki Aimable: key overview policy, so you can know that nobody tampered with the policy itself, and nobody tampered with the logs that you… you were using. Now, let's just real quick try to…
+
+270
+00:44:12.990 --> 00:44:19.730
+Niki Aimable: To do this in… enforced…
+
+271
+00:44:36.150 --> 00:44:44.380
+Niki Aimable: Okay, so, shows you… Let's see the state policy is applied, okay.
+
+272
+00:44:45.390 --> 00:44:46.500
+Niki Aimable: Okay.
+
+273
+00:44:47.090 --> 00:44:54.280
+Niki Aimable: And, we'll just try to… I'll try another example…
+
+274
+00:44:54.930 --> 00:45:05.760
+Niki Aimable: like I was doing earlier, if I tried to actually ask Claude to do something, like, again, like, fake read the secrets. This is just me talking to Claude.
+
+275
+00:45:06.840 --> 00:45:18.229
+Niki Aimable: And it actually came, like, basically, Quality gets a 10-0 error, and it starts to explain about it, like, oh, this fight is protected by a 10-0 constraints, you know, to be…
+
+276
+00:45:18.460 --> 00:45:23.500
+Niki Aimable: red, blah blah blah blah. And if I try to look at the…
+
+277
+00:45:24.580 --> 00:45:28.980
+Niki Aimable: The logs, that, that come out of that.
+
+278
+00:45:34.080 --> 00:45:41.699
+Niki Aimable: I see now that it was actually denied at this time. It's not able to deny, so it is actually now impossible to do that. And if I try to do…
+
+279
+00:45:42.550 --> 00:45:45.319
+Niki Aimable: Let me try to do a delegation now.
+
+280
+00:45:45.470 --> 00:45:50.499
+Niki Aimable: So, this is an important case we have to do where… so we have the researcher, sub-agent.
+
+281
+00:45:50.620 --> 00:45:58.859
+Niki Aimable: Which will give, narrower permissions, and here, this is the case, like, use the researcher subagent to inspect, so we're asking the…
+
+282
+00:45:59.860 --> 00:46:14.779
+Niki Aimable: the researcher to read in an old environment, but also run commands which are not allowed. These commands are not part of the researcher agent access, even though they are part of the parent agent. So if the researcher tries to do it, we see how this will… will show… will come up with.
+
+283
+00:46:19.630 --> 00:46:21.640
+Niki Aimable: Yep, it's still blocked here.
+
+284
+00:46:24.660 --> 00:46:44.550
+Niki Aimable: just so that it was blocked. There is a governance system or whatever. This is, like, a cloud trying to make sense of what is blocking it, but the call simply doesn't go through. And if I, yeah, if I look, I see the deny event for the agent researcher, which was trying to do this, to read the fake, to read the fake…
+
+285
+00:46:45.290 --> 00:46:51.620
+Niki Aimable: secrets path. And here, again, the idea is that you're able to see
+
+286
+00:46:52.520 --> 00:47:01.400
+Niki Aimable: In a dry run, you're able to enforce, you're able to verify everything that it has done to make sure now no tempering has done. You're able to…
+
+287
+00:47:01.990 --> 00:47:11.680
+Niki Aimable: have these… to have all these logs sent to a CME, you're about to verify them outside of the laptop. You can literally know that nobody has a template with those.
+
+288
+00:47:11.700 --> 00:47:26.510
+Niki Aimable: Which is important for most of compliance regimes. And more importantly, you can deploy this, like we mentioned earlier, at scale in your environment, and have different warrants for different users, and have the process enforced by default.
+
+289
+00:47:26.590 --> 00:47:29.560
+Niki Aimable: So, one minute to go, maybe? Any question?
+
+290
+00:47:30.970 --> 00:47:34.190
+Ashish Rajan: I don't have any question, but I'll let others answer it.
+
+291
+00:47:35.230 --> 00:47:36.360
+Ashish Rajan: That's pretty cool, man.
+
+292
+00:47:36.990 --> 00:47:39.219
+Ashish Rajan: I feel like there's probably more time, though.
+
+293
+00:47:40.130 --> 00:47:47.790
+Niki Aimable: Yeah, we can talk about this all day, but yeah, hopefully I'll come back and we can dig deeper, maybe with a different framework or something.
+
+294
+00:47:48.320 --> 00:47:54.540
+Ashish Rajan: Where can people find you to connect with you, man? I've shared the repo, by the way, just making sure that's the right link in the chat.
+
+295
+00:47:54.660 --> 00:47:57.159
+Ashish Rajan: So people can connect with you.
+
+296
+00:47:57.160 --> 00:48:01.900
+Niki Aimable: So that's the one for the core engine, and for…
+
+297
+00:48:02.010 --> 00:48:09.170
+Niki Aimable: For specific… if you really want to run it, like, literally, this demo I have, it's here. There is this,
+
+298
+00:48:09.310 --> 00:48:10.900
+Niki Aimable: I'll call the governance.
+
+299
+00:48:10.900 --> 00:48:13.279
+Ashish Rajan: I think it's sharing a different screen, man. Oh yeah, okay, cool.
+
+300
+00:48:13.760 --> 00:48:19.850
+Niki Aimable: Yeah, yeah, so that's, like, to literally directly… just, this is, like, specifically for this kind of demo. Yeah.
+
+301
+00:48:20.530 --> 00:48:31.309
+Niki Aimable: But yeah, you can find me on LinkedIn, and I think, like, if you look at the record, you'll see more ways to reach out as well. But yeah, I really appreciate the conversation, and thank you so much, Ashish, for having me.
+
+302
+00:48:31.520 --> 00:48:36.680
+Ashish Rajan: No, I mean, thank you for coming in as well, and I'll, send a survey link to everyone as well who's tuned in.
+
+303
+00:48:36.680 --> 00:48:51.780
+Ashish Rajan: Obviously, this is the first one we have run, so we're looking for feedback and improvement, anything we could be doing. So, yeah, would appreciate any feedback that people have. If anyone of you would like to share what you guys are working on, would love to highlight that as well, and I think…
+
+304
+00:48:51.780 --> 00:49:00.189
+Ashish Rajan: I've made it… I said this in the beginning as well. The goal is to have almost like an open conversation between us practitioners, people who are working in the space.
+
+305
+00:49:00.190 --> 00:49:20.060
+Ashish Rajan: Whether it's through our open source projects or the work that we have done, and happy to not have that recorded if you guys… like, for example, I have a session that is planned which would not be recorded specifically because a person does not want to be recorded. We can do sessions like those as well, but the goal is to have an open conversation, so yeah, I really appreciate that. And, thank you so much for your.
+

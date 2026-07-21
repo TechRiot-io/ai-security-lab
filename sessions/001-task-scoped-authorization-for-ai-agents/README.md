@@ -1,51 +1,83 @@
 # Session 001: Task-scoped authorization for AI agents
 
-**Date:** TBD  
-**Speaker:** Security Engineer, Snap  
-**Format:** Live technical demonstration  
-**Recording:** To be added
+**Date:** 21 July 2026  
+**Speaker:** Niki Aimable, Security Engineer at Snap  
+**Format:** Live technical demonstration
 
-## Summary
+## TL;DR
 
-This session demonstrates how an AI coding agent can be placed on a least-privilege leash by granting access only for the task it is currently performing.
+AI agents should not receive broad, long-lived access to tools, credentials, or environments.
 
-The walkthrough focuses on a live Claude Code workflow using open-source tooling and task-scoped authorization.
+This session demonstrated how an AI coding agent can instead receive narrowly scoped authorization for the task it is currently performing. Authorization is enforced outside the LLM, tool arguments can be restricted, delegated permissions can only become narrower, and agent actions can produce an auditable record.
 
-## What will be demonstrated
+## Key takeaways
 
-- defining the task an agent is authorised to perform
-- granting narrowly scoped access for that task
-- preventing broader access outside the task boundary
-- observing and validating agent actions
-- revoking or expiring access when the task ends
+- Give agents **task-scoped permissions**, not permanent access.
+- Enforce authorization **outside the LLM** with deterministic policy checks.
+- Restrict **tool arguments and actions**, not only which tools an agent may call.
+- Use **default deny** for tools and actions that are not explicitly authorized.
+- Ensure permissions become narrower when delegated to another agent.
+- Add **human approval gates** for sensitive actions.
+- Capture authorization decisions and agent actions for audit and investigation.
 
-## Security problem
+## Security patterns demonstrated
 
-AI agents often operate with credentials and permissions that are broader or longer-lived than the task requires. This increases the impact of prompt injection, tool misuse, compromised dependencies, and unintended agent behaviour.
+- Default-deny authorization
+- Least privilege
+- Task-scoped capabilities
+- Argument-level controls
+- Restricted delegation
+- Human approval
+- Auditable authorization decisions
+- Sandboxed agent execution
 
-Task-scoped authorization aims to reduce that blast radius.
+## Open-source projects
 
-## Questions the session should answer
+- [Tenuo](https://github.com/tenuo-ai/tenuo)
+- [Claude Governance](https://github.com/tenuo-ai/claude-governance)
 
-- What is the authorization boundary?
-- Who or what defines the task?
-- How is policy enforced across tools?
-- How are permissions issued and revoked?
-- What happens when the agent changes its plan?
-- What evidence is captured for audit and incident response?
-- Which failure modes remain?
+## Questions raised by the community
 
-## Demo material
+- Can the same authorization model be applied to cloud agents?
+- How should limited permissions be associated with an individual user?
+- How should permissions be delegated safely between multiple agents?
+- What evidence should be retained for audit and incident response?
 
-Add reproducible material under `demo/` after speaker review.
+## Session files
 
-## Architecture
+The summary above intentionally includes only the highest-signal points.
 
-Add sanitised diagrams under `diagrams/`.
+Download the original session files to review the complete discussion, implementation details, audience questions, and form your own interpretation:
 
-## Resources
+- [Full transcript](./transcript.vtt)
+- [Session chat](./chat.txt)
+- [Additional resources](./resources.md)
 
-See [resources.md](resources.md).
+## Who should share this?
+
+Share this session with people who are building, deploying, governing, or securing AI agents, including:
+
+- Security engineers
+- Application security engineers
+- Cloud security engineers
+- Platform engineers
+- AI and LLM engineers
+- Security architects
+- Engineering leaders responsible for AI adoption
+
+## Help grow AI Security Lab
+
+AI Security Lab is a practitioner-led collection of real-world AI security implementations.
+
+You can help by:
+
+- Starring this repository
+- Sharing this session with your team or community
+- Opening an issue when something is unclear
+- Suggesting a future topic, demonstration, or speaker
+- Contributing useful references or implementation patterns
+
+> **Making production AI security knowledge accessible to every security engineer.**
 
 ## Disclaimer
 

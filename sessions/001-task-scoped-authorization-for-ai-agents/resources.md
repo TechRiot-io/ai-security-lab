@@ -1,13 +1,13 @@
 # Resources
 
-Add links discussed during the session, including:
+## Open-source projects demonstrated
 
-- source repositories
-- relevant standards
-- policy engines
-- authorization systems
-- agent security research
-- threat models
-- follow-up reading
+- [Tenuo](https://github.com/tenuo-ai/tenuo)
+- [Claude Governance](https://github.com/tenuo-ai/claude-governance)
+
+## Original session material
+
+- [Full transcript](./transcript.vtt)
+- [Session chat](./chat.txt)
 
 Third-party resources retain their original licences and terms.

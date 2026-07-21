@@ -1,0 +1,61 @@
+00:17:45	Ashish Rajan:	Curious how many are using AI Agents at work today? (Yes ✅ or No ❌)
+00:17:48	Ashish Rajan:	Reacted to "Curious how many are using AI Agents at work today? (Yes ✅ or No ❌)" with ✅
+00:18:03	Dorai Babu:	Reacted to "Curious how many are..." with ✅
+00:18:05	Hardi:	Reacted to "Curious how many are using AI Agents at work today? (Yes ✅ or No ❌)" with ✅
+00:18:12	Mukul.Kansal:	Reacted to "Curious how many are..." with ✅
+00:18:22	jeff:	Reacted to "Curious how many are using AI Agents at work today? (Yes ✅ or No ❌)" with ✅
+00:18:27	Sunitha Webster:	Reacted to "Curious how many are using AI Agents at work today? (Yes ✅ or No ❌)" with ✅
+00:18:32	Jigar:	Reacted to Curious how many are... with "❌"
+00:18:43	Narayan Ram Narayanan (_n2r_):	Reacted to Curious how many are... with "✅"
+00:18:49	Chris:	Reacted to "Curious how many are using AI Agents at work today? (Yes ✅ or No ❌)" with ✅
+00:18:59	Dhaval Jain:	Reacted to Curious how many are... with "✅"
+00:20:12	Ashish Rajan:	What are the AI agents using?
+ (GPT 🤖 or Open-weight 🧑🏻‍🏭 or 🏎️ Claude)
+00:20:26	Ramchand:	Reacted to "Curious how many a..." with ✅
+00:20:28	Hardi:	Reacted to "What are the AI agents using?
+ (GPT 🤖 or Open-weight 🧑🏻‍🏭 or 🏎️ Claude)" with 🤖
+00:20:36	Ashish Rajan:	So cool that many of you are already using AI agents
+00:20:49	Vu An:	Reacted to "What are the AI agents using?
+ (GPT 🤖 or Open-weight 🧑🏻‍🏭 or 🏎️ Claude)" with 🏎️
+00:20:50	Mukul.Kansal:	Reacted to "What are the AI agen..." with 🤖
+00:21:00	Ramchand:	Reacted to "What are the AI ag..." with 🏎️
+00:21:21	Ashish Rajan:	Reacted to "What are the AI agents using?
+ (GPT 🤖 or Open-weight 🧑🏻‍🏭 or 🏎️ Claude)" with 🧑🏾‍🏭
+00:21:30	Chris:	Reacted to "What are the AI agents using?
+ (GPT 🤖 or Open-weight 🧑🏻‍🏭 or 🏎️ Claude)" with 🏎️
+00:21:33	Chris:	Reacted to "What are the AI agents using?
+ (GPT 🤖 or Open-weight 🧑🏻‍🏭 or 🏎️ Claude)" with 🧑🏾‍🏭
+00:22:33	jeff:	Reacted to "What are the AI agents using?
+ (GPT 🤖 or Open-weight 🧑🏻‍🏭 or 🏎️ Claude)" with 🤖
+00:22:37	jeff:	Reacted to "What are the AI agents using?
+ (GPT 🤖 or Open-weight 🧑🏻‍🏭 or 🏎️ Claude)" with 🏎️
+00:22:38	jeff:	Reacted to "What are the AI agents using?
+ (GPT 🤖 or Open-weight 🧑🏻‍🏭 or 🏎️ Claude)" with 🧑🏾‍🏭
+00:24:09	Sunitha Webster:	Reacted to "What are the AI agents using?
+ (GPT 🤖 or Open-weight 🧑🏻‍🏭 or 🏎️ Claude)" with 🏎️
+00:25:13	Dhaval Jain:	Reacted to What are the AI agen... with "🏎️"
+00:26:35	iuliana Silvasan:	Reacted to "Curious how many a..." with ❌
+00:32:39	jeff:	Are there any similar patterns for cloud agents?
+00:33:49	Stephen M:	Reacted to Curious how many are... with "✅"
+00:37:02	Ashish Rajan:	Cursor FTW! We have a session with SpaceX - xAI engineer as the 3rd or 4th one so I’m sure cursor would come up quite a lot in that session 😄
+00:37:23	Steeven:	Reacted to "Curious how many are using AI Agents at work today? (Yes ✅ or No ❌)" with ✅
+00:41:19	Narayan Ram Narayanan (_n2r_):	Got it so it more like. Associate with each user but use like limited token. Lets say only read. Have a read specefic token associated for that user and give it to agent.
+
+Is this right?
+00:41:58	Ashish Rajan:	Replying to "Got it so it more li..."
+
+Yes that’s how I heard it from niki
+00:42:17	Narayan Ram Narayanan (_n2r_):	Reacted to Yes that’s how I hea... with "👍"
+00:51:42	Ashish Rajan:	I love how - even security teams just like devs love —dangerously-skip permission for every walkthrough (of course because  we can do so because we run it in sandboxes :)
+00:54:47	Narayan Ram Narayanan (_n2r_):	Reacted to I love how - even se... with "😂"
+00:55:24	Narayan Ram Narayanan (_n2r_):	Hey can you pls give the github link for this?
+00:56:40	Ashish Rajan:	Here’s the link to GitHub. https://github.com/tenuo-ai/tenuo
+00:58:00	iuliana Silvasan:	Reacted to "I love how - even ..." with 😂
+00:59:42	iuliana Silvasan:	Thank you for this demo, presentation and discussion. I need to run now, but hope to catch up on anything that will follow. Cheers!
+00:59:56	Niki Aimable:	github.com/tenuo-ai/claude-governance
+01:00:27	Narayan Ram Narayanan (_n2r_):	Reacted to github.com/tenuo-ai/... with "👍"
+01:00:32	Hardi:	Thank you @Niki Aimable for the demo and @Ashish Rajan for organizing the conversation. This is interesting, and love the audit trail of all the events.
+01:00:41	Niki Aimable:	Reacted to "I love how - even ..." with 😂
+01:00:44	iuliana Silvasan:	Reacted to "github.com/tenuo-a..." with 👍
+01:00:49	iuliana Silvasan:	Reacted to "Here’s the link t..." with 👍
+01:00:55	Hardi:	Reacted to "github.com/tenuo-ai/claude-governance" with 👍
