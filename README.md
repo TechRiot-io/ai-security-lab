@@ -6,7 +6,7 @@ AI Security Lab is a practitioner-led community by [TechRiot.io](https://techrio
 
 Each session focuses on a real implementation, shown live by the person who built it. The goal is to make practical AI security knowledge easier to inspect, reproduce, and improve.
 
-## Join upcoming sessions
+## 👉 Join Upcoming Sessions (Luma)
 
 AI Security Lab hosts live practitioner sessions every two weeks.
 
