@@ -10,7 +10,7 @@ Each session focuses on a real implementation, shown live by the person who buil
 
 AI Security Lab hosts live practitioner sessions every two weeks.
 
-[View and register for upcoming sessions on Luma](https://lu.ma/aisecuritylab)
+[View and register for upcoming sessions on Luma](https://luma.com/ai-security-lab)
 
 ## What belongs here
 
